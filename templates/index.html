@@ -1,0 +1,83 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>賓果量化分析</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #111;
+    color: white;
+    text-align: center;
+    font-family: Arial;
+}
+
+button {
+    padding: 12px;
+    width: 90%;
+    margin: 10px;
+}
+
+canvas {
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📊 賓果量化分析平台</h2>
+
+<button onclick="run()">🚀 執行策略比較</button>
+
+<div id="result"></div>
+
+<canvas id="chart"></canvas>
+
+<script>
+
+function run() {
+
+fetch("/compare")
+.then(r => r.json())
+.then(data => {
+
+    document.getElementById("result").innerHTML =
+        `
+        🔥 熱號 avg: ${data.hot.avg_hit}<br>
+        ❄ 冷號 avg: ${data.cold.avg_hit}<br>
+        🎲 隨機 avg: ${data.random.avg_hit}
+        `;
+
+    new Chart(document.getElementById("chart"), {
+        type: "line",
+        data: {
+            labels: data.hot.trend.map((_,i)=>i),
+            datasets: [
+                {
+                    label: "熱號",
+                    data: data.hot.trend
+                },
+                {
+                    label: "冷號",
+                    data: data.cold.trend
+                },
+                {
+                    label: "隨機",
+                    data: data.random.trend
+                }
+            ]
+        }
+    });
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
